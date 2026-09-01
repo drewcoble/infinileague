@@ -28,6 +28,8 @@ import { getErrorMessage } from "../lib/errors";
 // the real detected values from Sleeper and matter - they feed the value
 // math this app is for.
 const FILLER_SALARY_CAP = 200;
+const FILLER_TE_SCORING = "NONE";
+const FILLER_SIX_POINT_PASS_TDS = false;
 
 interface SleeperLeagueOption {
   leagueId: string;
@@ -46,8 +48,12 @@ interface SleeperImportPreview {
   teamCount: number;
   draftType: "auction" | "snake" | "linear" | undefined;
   scoring: "STD" | "HALF" | "PPR";
-  teScoring: "NONE" | "HALF" | "FULL";
-  sixPointPassTds: boolean;
+  // No teScoring/sixPointPassTds here - confirmed live that
+  // previewSleeperImport doesn't return either (Sleeper's TE-premium/
+  // passing-TD settings aren't mapped yet, per convex/sleeper/
+  // leagueSettingsMapping.ts) - infinidraft's own LeagueImportWizard.tsx
+  // falls back to DEFAULT_FORM's "NONE"/false for the same reason, which
+  // is what FILLER_TE_SCORING/FILLER_SIX_POINT_PASS_TDS below mirror.
   rosterSlots: {
     QB: number;
     RB: number;
@@ -150,8 +156,8 @@ export function ConnectSleeperLeague({
         draftType: preview.draftType ?? "auction",
         salaryCap: FILLER_SALARY_CAP,
         scoring: preview.scoring,
-        teScoring: preview.teScoring,
-        sixPointPassTds: preview.sixPointPassTds,
+        teScoring: FILLER_TE_SCORING,
+        sixPointPassTds: FILLER_SIX_POINT_PASS_TDS,
         rosterSlots: preview.rosterSlots,
         flexPositions: preview.flexPositions,
         superflexPositions: preview.superflexPositions,

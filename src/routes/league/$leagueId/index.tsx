@@ -12,14 +12,15 @@ import {
   Title,
 } from "@mantine/core";
 import { RefreshCw } from "lucide-react";
-import { api } from "../../convexApi";
-import { AppHeader } from "../../components/AppHeader";
-import { PageContainer } from "../../components/PageContainer";
-import { getErrorMessage } from "../../lib/errors";
-import { formatRelativeTime } from "../../lib/relativeTime";
-import type { LinkedSeason } from "../../types/season";
+import { api } from "../../../convexApi";
+import { AppHeader } from "../../../components/AppHeader";
+import { PageContainer } from "../../../components/PageContainer";
+import { StandingsTable } from "../../../components/StandingsTable";
+import { getErrorMessage } from "../../../lib/errors";
+import { formatRelativeTime } from "../../../lib/relativeTime";
+import type { LinkedSeason, StandingsRow } from "../../../types/season";
 
-export const Route = createFileRoute("/league/$leagueId")({
+export const Route = createFileRoute("/league/$leagueId/")({
   component: LeaguePage,
 });
 
@@ -54,6 +55,10 @@ function LeaguePage() {
 
   const syncStatus: RosterSyncStatusRow[] | undefined = useQuery(
     api.season.rosterPlayers.getRosterSyncStatus,
+    isAuthenticated ? { seasonId } : "skip",
+  );
+  const standings: StandingsRow[] | undefined = useQuery(
+    api.season.standings.getStandings,
     isAuthenticated ? { seasonId } : "skip",
   );
   const syncLeagueRoster = useAction(api.sleeper.league.syncLeagueRoster);
@@ -127,6 +132,15 @@ function LeaguePage() {
               <Alert color="red" withCloseButton onClose={() => setSyncError(null)}>
                 {syncError}
               </Alert>
+            )}
+            {standings === undefined ? (
+              <Loader />
+            ) : (
+              <StandingsTable
+                leagueId={leagueId}
+                rows={standings}
+                waiverType={season.waiverType}
+              />
             )}
             <Text c="dimmed">
               Waiver recommendations, FAAB bid suggestions, and trade

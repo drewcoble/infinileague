@@ -188,6 +188,12 @@ export type PublicApiType = {
   };
   players: {
     getPlayer: FunctionReference<"query", "public", { fpid: number }, any>;
+    getPlayersByFpids: FunctionReference<
+      "query",
+      "public",
+      { fpids: Array<number> },
+      any
+    >;
     upsertPlayers: FunctionReference<
       "mutation",
       "public",
@@ -1227,6 +1233,22 @@ export type PublicApiType = {
         any
       >;
     };
+    standings: {
+      getStandings: FunctionReference<
+        "query",
+        "public",
+        { seasonId: Id<"seasons"> },
+        any
+      >;
+    };
+    teamRoster: {
+      getTeamRosterForWeek: FunctionReference<
+        "action",
+        "public",
+        { teamId: Id<"seasonTeams">; week: string },
+        any
+      >;
+    };
   };
   yahoo: {
     league: {
@@ -1371,6 +1393,14 @@ export type PublicApiType = {
       "action",
       "public",
       { season?: string; week: string },
+      any
+    >;
+  };
+  nflSchedule: {
+    getByeWeeks: FunctionReference<
+      "query",
+      "public",
+      Record<string, never>,
       any
     >;
   };

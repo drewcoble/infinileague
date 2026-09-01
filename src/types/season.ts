@@ -12,4 +12,56 @@ export interface LinkedSeason {
   name: string;
   teamCount: number;
   scoring: "STD" | "HALF" | "PPR";
+  // Absent until the season's first roster sync runs (see
+  // api.sleeper.league.syncLeagueRoster) - determines which column the
+  // standings table shows (see StandingsRow below).
+  waiverType?: "faab" | "priority";
+}
+
+// Mirrors convex/season/standings.ts's StandingsRow - already sorted by the
+// backend (win% desc, pointsFor desc tiebreak), rank already assigned.
+// Exactly one of faabRemaining/waiverPosition is set, chosen by the
+// season's waiverType above.
+export interface StandingsRow {
+  teamId: string;
+  name: string;
+  isSelf: boolean;
+  rank: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  pointsFor: number;
+  pointsAgainst: number;
+  faabRemaining?: number;
+  waiverPosition?: number;
+}
+
+export type SlotLabel =
+  | "QB"
+  | "SUPERFLEX"
+  | "RB"
+  | "WR"
+  | "FLEX"
+  | "TE"
+  | "DST"
+  | "K"
+  | "BENCH";
+
+// Mirrors convex/season/teamRoster.ts's TeamRosterRow - already sorted by
+// the backend in infinidraft's own canonical slot order (QB, SUPERFLEX, RB,
+// WR, FLEX, TE, DST, K, BENCH - see src/lib/rosterSlots.ts's SLOT_ORDER
+// there), so this just renders in the order given. slot/actualPoints are
+// only ever absent when the team isn't Sleeper-linked; projectedPoints is
+// absent whenever that week hasn't been projected yet.
+export interface TeamRosterRow {
+  fpid: number;
+  name: string;
+  position: "QB" | "RB" | "WR" | "TE" | "DST" | "K";
+  team: string | null;
+  byeWeek?: number;
+  isRookie: boolean;
+  injury?: { status: string; statusShort: string };
+  slot?: SlotLabel;
+  actualPoints?: number;
+  projectedPoints?: number;
 }
